@@ -1,0 +1,152 @@
+.options {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 100px;
+  font-size: 18px;
+}
+
+.nav-link {
+  text-decoration: none;
+  font-size: 18px;
+  color: gray;
+  padding: 5px 10px;
+  border-radius: 5px;
+  transition: color 0.3s, background-color 0.3s;
+}
+
+.nav-link.active {
+  color: white;
+  background-color: #007bff;
+  font-weight: bold;
+}
+
+.HomeContainer {
+  width: 80%;
+  padding: 20px;
+  margin: 0px auto;
+}
+
+.schedule-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.schedule-group {
+  margin-bottom: 30px;
+}
+
+.schedule-date {
+  font-size: 24px;
+  font-weight: bold;
+  padding: 5px;
+  margin: 10px 10px;
+}
+
+.match-info {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  align-items: center;
+}
+
+.matchStatus-info {
+  width: 100px;
+  padding: 3px 0;
+  margin-right: 30px;
+  font-size: 13px;
+  font-weight: 600;
+  text-align: center;
+  border-radius: 10px;
+  border: 1px solid black;
+}
+
+.data-container {
+  padding: 2px 0px;
+  background-color: #fafbfe;
+  border-top: 1px solid rgb(201, 188, 188);
+  border-bottom: 1px solid rgb(201, 188, 188);
+}
+
+.data-container p {
+  font-size: 20px;
+}
+
+.schedule-card {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  border-radius: 8px;
+  border-bottom: 1px solid #ccc;
+}
+
+.schedule-card p {
+  margin: 0;
+}
+
+.team-info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.team-info p {
+  margin-left: auto;
+  width: 150px;
+}
+
+.team-info > team1 {
+  text-align: right;
+}
+
+.team-info img {
+  width: 40px;
+  height: 40px;
+}
+
+.score {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.score p {
+  font-weight: bold;
+}
+
+.match-details {
+  margin-left: auto;
+  font-size: 12px;
+  color: #007bff;
+}
+
+.schedule-card .time {
+  font-size: 16px;
+  font-weight: bold;
+  margin-right: 30px;
+}
+
+.match-info {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+  align-items: center;
+  flex: 1;
+}
+
+.icon {
+  margin-left: auto;
+  padding-right: 10px;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.today-hide {
+  font-size: 14px;
+  color: red;
+  padding: 3px 7px;
+  margin-left: 5px;
+  border-radius: 10px;
+  border: 1px solid red;
+}

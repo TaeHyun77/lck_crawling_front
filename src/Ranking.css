@@ -1,0 +1,61 @@
+.rankingContainer {
+  display: flex;
+  flex-direction: column;
+  width: 80%;
+  margin: 50px auto;
+}
+
+.rankingData {
+    display: flex;
+    flex-direction: column;
+  }
+
+.rankingHeader {
+  display: grid;
+  grid-template-columns: repeat(9, 1fr);
+  background-color: #fafbfe;
+  font-weight: bold;
+  padding: 10px 0;
+  text-align: center;
+  border-bottom: 2px solid #ddd;
+}
+
+.teamRank {
+    width: 230px;
+}
+
+.rankingRow {
+  display: grid;
+  grid-template-columns: repeat(9, 1fr);
+  padding: 20px 0;
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+  border-bottom: 1px solid #ddd;
+}
+
+.teamInfo {
+  display: flex;
+  width: 230px;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.teamIndex {
+  font-weight: bold;
+  margin: 0px 20px;
+}
+
+.teamLogo {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+}
+
+.teamName {
+  display: flex;
+  font-size: 14px;
+  width: 100px;
+  font-weight: 600;
+}
