@@ -1,0 +1,21 @@
+.headerContainer {
+    display: flex; 
+    align-items: center; 
+    justify-content: space-between;
+    width: 100%;
+    height: 200px;
+    margin: 0px auto;
+}
+
+.LoLLogoImg {
+    width: 100px;
+    height: 50%;
+    border-radius: 10px;
+}
+
+.LckLogoImg {
+    width: 300px;
+    height: 150px;
+    border-radius: 10px;
+    margin: 0 auto; 
+}
