@@ -1,8 +1,6 @@
 import React from "react";
 import "./Header.css";
-import LoLLogo from "./lol.png";
-
-import LckLogo from "./img5.png";
+import LckLogo from "../img/Logo.png";
 
 const Header = () => {
   return (
