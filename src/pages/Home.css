@@ -51,7 +51,7 @@
 }
 
 .matchStatus-info {
-  width: 100px;
+  width: 60px;
   padding: 3px 0;
   margin-right: 30px;
   font-size: 13px;
@@ -59,6 +59,11 @@
   text-align: center;
   border-radius: 10px;
   border: 1px solid black;
+}
+
+.stageType {
+  font-size: 13px;
+  color: gray;
 }
 
 .data-container {
@@ -84,23 +89,38 @@
   margin: 0;
 }
 
-.team-info {
+.team1-info {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 10px;
 }
 
-.team-info p {
+.team1-info p {
+  margin-left: auto;
+  width: 150px;
+  text-align: right;
+  flex: 1;
+}
+
+.team1-info img {
+  width: 40px;
+  height: 40px;
+}
+
+.team2-info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.team2-info p {
   margin-left: auto;
   width: 150px;
 }
 
-.team-info > team1 {
-  text-align: right;
-}
-
-.team-info img {
+.team2-info img {
   width: 40px;
   height: 40px;
 }
@@ -149,4 +169,32 @@
   margin-left: 5px;
   border-radius: 10px;
   border: 1px solid red;
+}
+
+.otherMonth {
+    display: flex;
+    position: relative;
+    width: 100%;
+    line-height: 48px;
+    margin-bottom: 50px;
+    font-size: 15px;
+    gap: 30px;
+    background-color: white;
+    border-top: 1px solid rgb(201, 188, 188);
+    border-bottom: 1px solid rgb(201, 188, 188);
+    color: black;
+}
+
+.month-nav-link {
+  text-decoration: none;
+  font-size: 18px;
+  padding: 5px 20px;
+  border-radius: 5px;
+  transition: color 0.3s, background-color 0.3s;
+}
+
+.month-nav-link.active {
+  border-bottom: 2px solid blue;
+  border-radius: 0px;
+  font-weight: bold;
 }

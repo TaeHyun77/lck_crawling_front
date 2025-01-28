@@ -1,8 +1,8 @@
-import React, { useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import Header from "./Header";
+import Header from "../header/Header";
 import axios from "axios";
-import "./Home.css";
+import "../pages/Home.css";
 import { FaArrowRightLong } from "react-icons/fa6";
 
 const Home = () => {
@@ -18,7 +18,9 @@ const Home = () => {
       const response = await axios.get("http://localhost:8080/schedules");
       const data = response.data;
 
-      setScheduleList(data);
+      const monthSchedules = data.filter((schedule) => schedule.month === 1);
+
+      setScheduleList(monthSchedules);
 
       const todaySchedules = data.filter(
         (schedule) => schedule.matchDate === currentDate
@@ -66,7 +68,7 @@ const Home = () => {
     return acc;
   }, {});
 
-  // matchDate 기준 경기 일정 정렬
+  // today matchDate 경기 일정 정렬
   const groupedFilteredSchedules = todayScheduleList.reduce((acc, schedule) => {
     const { matchDate } = schedule;
     if (!acc[matchDate]) {
@@ -83,9 +85,7 @@ const Home = () => {
       <div className="options">
         <Link
           to="/home"
-          className={`nav-link ${
-            location.pathname === "/" ? "active" : ""
-          }`}
+          className={`nav-link ${location.pathname === "/" ? "active" : ""}`}
         >
           일정
         </Link>
@@ -111,10 +111,7 @@ const Home = () => {
                 </p>
               </div>
               {schedules.map((schedule, index) => (
-                <div
-                  key={index}
-                  className="schedule-card"
-                >
+                <div key={index} className="schedule-card">
                   <div className="time">{schedule.startTime}</div>
                   <div className="matchStatus-info">
                     {schedule.matchStatus === "종료" ? (
@@ -132,8 +129,7 @@ const Home = () => {
                       />
                     </div>
                     <div className="score">
-                      {schedule.teamScore1 ===
-                      "경기가 아직 진행되지 않았습니다." ? (
+                      {schedule.teamScore1 === "none" ? (
                         <p> vs </p>
                       ) : (
                         <p>
@@ -157,8 +153,26 @@ const Home = () => {
             </div>
           ))}
         </div>
-        <h2>경기 일정</h2>
+
         <div className="schedule-container">
+          <div className="otherMonth">
+            <Link
+              to="/home"
+              className={`month-nav-link ${
+                location.pathname === "/" ? "active" : ""
+              }`}
+            >
+              1월
+            </Link>
+            <Link
+              to="/otherMonth"
+              className={`month-nav-link ${
+                location.pathname === "/otherMonth" ? "active" : ""
+              }`}
+            >
+              2월
+            </Link>
+          </div>
           {Object.entries(groupedSchedules).map(([date, schedules]) => (
             <div key={date} className="schedule-group">
               <div className="data-container">
@@ -184,8 +198,11 @@ const Home = () => {
                       <p style={{ color: "blue" }}>{schedule.matchStatus}</p>
                     )}
                   </div>
+                  <div className="stageType">
+                    <p>{schedule.stageType}</p>
+                  </div>
                   <div className="match-info">
-                    <div className="team-info">
+                    <div className="team1-info">
                       <p className="team1">{schedule.team1}</p>
                       <img
                         src={schedule.teamImg1}
@@ -193,8 +210,7 @@ const Home = () => {
                       />
                     </div>
                     <div className="score">
-                      {schedule.teamScore1 ===
-                      "경기가 아직 진행되지 않았습니다." ? (
+                      {schedule.teamScore1 === "none" ? (
                         <p> vs </p>
                       ) : (
                         <p>
@@ -202,16 +218,13 @@ const Home = () => {
                         </p>
                       )}
                     </div>
-                    <div className="team-info">
+                    <div className="team2-info">
                       <img
                         src={schedule.teamImg2}
                         alt={`${schedule.team2} logo`}
                       />
                       <p>{schedule.team2}</p>
                     </div>
-                  </div>
-                  <div className="icon">
-                    <FaArrowRightLong />
                   </div>
                 </div>
               ))}

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import Header from "./Header";
+import Header from "../header/Header";
 import { Link, useLocation } from "react-router-dom";
 import "./Ranking.css";
 

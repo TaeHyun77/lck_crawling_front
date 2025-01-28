@@ -1,7 +1,8 @@
 import './App.css';
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import Home from "./Home";
-import Rank from "./Ranking"
+import Home from "./pages/Home";
+import Rank from "./pages/Ranking"
+import OtherMonth from "./pages/OtherMonth"
 
 function App() {
   return (
@@ -9,6 +10,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/ranking" element={<Rank />} />
+          <Route path="/otherMonth" element={<OtherMonth />} />
         </Routes>
     </BrowserRouter>
   );
