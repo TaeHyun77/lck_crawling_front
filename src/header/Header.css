@@ -1,21 +1,63 @@
 .headerContainer {
-    display: flex; 
-    align-items: center; 
-    justify-content: space-between;
-    width: 100%;
-    height: 200px;
-    margin: 0px auto;
-}
-
-.LoLLogoImg {
-    width: 100px;
-    height: 50%;
-    border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 80%;
+  height: 200px;
+  margin: 0px auto;
 }
 
 .LckLogoImg {
-    width: 300px;
-    height: 150px;
-    border-radius: 10px;
-    margin: 0 auto; 
+  position: absolute;
+  left: 50%; 
+  top: 50px;
+  transform: translateX(-50%); 
+  width: 300px;
+  height: 150px;
+  border-radius: 10px;
+  margin: 0 auto;
+}
+
+.logContainer {
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+  gap: 10px;
+}
+
+.loginName {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.loginButton {
+  box-sizing: border-box;
+  padding: 15px 20px;
+  margin: 15px 0;
+  font-size: 15px;
+  font-weight: 700;
+  border-radius: 10px;
+  border: none;
+  color: white;
+  transition: transform 0.2s;
+  background-color: rgb(244, 239, 239);
+  color: black;
+}
+
+.logoutButton {
+  box-sizing: border-box;
+  padding: 15px 20px;
+  margin-left: 15px;
+  font-size: 15px;
+  font-weight: 700;
+  border-radius: 10px;
+  border: none;
+  color: red;
+  transition: transform 0.2s;
+  background-color: rgb(244, 239, 239);
+  color: black;
+}
+
+button:hover {
+  transform: scale(1.03);
 }
