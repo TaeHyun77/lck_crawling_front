@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import Header from "../header/Header";
-import axios from "axios";
+import api from "../api/api";
 import "../pages/Home.css";
 import { FaArrowRightLong } from "react-icons/fa6";
 
@@ -15,7 +15,7 @@ const Home = () => {
   // 일정 데이터 가져오기
   const getScheduleList = async () => {
     try {
-      const response = await axios.get("http://localhost:8080/schedules");
+      const response = await api.get("http://localhost:8080/schedules");
       const data = response.data;
 
       const monthSchedules = data.filter((schedule) => schedule.month === 1);
@@ -55,8 +55,6 @@ const Home = () => {
 
     setCurrentDate(customFormattedDate);
   }, []);
-
-  console.log(currentDate);
 
   // matchDate 기준 경기 일정 정렬
   const groupedSchedules = scheduleList.reduce((acc, schedule) => {
