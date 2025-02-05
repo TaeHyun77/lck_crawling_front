@@ -2,19 +2,29 @@ import React, { useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Header.css";
 import LckLogo from "../img/Logo.png";
-import { LoginContext } from "../LoginState";
+import { LoginContext } from "../state/LoginState";
 import api from "../api/api";
+import axios from "axios"
 import Cookies from "js-cookie";
 
 const Header = () => {
   const { isLogin, setIsLogin, logincheck, userInfo } = useContext(LoginContext);
   const navigate = useNavigate();
 
-  console.log("로그인 여부 : " + isLogin)
+  console.log("로그인 여부 : " + isLogin);
 
-  const onGoogleLogin = () => {
-    window.location.href = "http://localhost:8080/oauth2/authorization/google";
-    navigate("/");
+  const onGoogleLogin = async () => {
+    try {
+      const response = await axios.get("http://localhost:8080/googleLogin");
+      const data = response.data;
+      console.log(data)
+
+      if (data.url) {
+        window.location.href = data.url;
+      }
+    } catch (error) {
+      console.error("Google 로그인 요청 실패:", error);
+    }
   };
 
   const googleLogout = async () => {
@@ -24,7 +34,8 @@ const Header = () => {
       try {
         const response = await api.post("/googleLogout");
         if (response.data) {
-          Cookies.remove("Authorization");
+          Cookies.remove("authorization");
+          api.defaults.headers.common.authorization = undefined;
           alert("로그아웃 성공!");
           setIsLogin(false);
           navigate("/");

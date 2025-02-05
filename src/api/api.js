@@ -5,11 +5,10 @@ const api = axios.create();
 
 api.interceptors.request.use(
   (config) => {
-    const accessToken = Cookies.get("Authorization");
-    console.log(accessToken);
+    const accessToken = Cookies.get("authorization");
 
     if (accessToken) {
-      config.headers.Authorization = `Bearer ${accessToken}`;
+      config.headers.authorization = `Bearer ${accessToken}`;
     }
 
     return config;
@@ -29,36 +28,40 @@ api.interceptors.response.use(
       originalRequest._retry = true;
 
       try {
-        const response = await api.post(
-          "/reissue",
+        const refreshAuthorization = Cookies.get("refreshAuthorization");
+
+        const response = await axios.post(
+          "http://localhost:8080/reToken",
           {},
-          { withCredentials: true }
+          {
+            // 헤더에 담아서 보냄
+            headers: {
+              refreshAuthorization: `Bearer ${refreshAuthorization}`,
+            },
+          }
         );
 
-        console.log(response);
+        // 헤더의 토큰을 가져올 때는 response.headers[''] 형식을 지키고 반드시 소문자로 시작해야 함
+        const newAccessToken = response.headers["authorization"];
 
-        const newAccessToken = response.headers.Authorization;
-        console.log(newAccessToken);
-
-        Cookies.set("Authorization", newAccessToken, {
+        Cookies.set("authorization", newAccessToken, {
           secure: true,
           sameSite: "Strict",
         });
+        
+        if (newAccessToken) {
+          console.log("Access token이 성공적으로 재발급되었습니다.");
+        }
 
-        console.log("Access token이 성공적으로 재발급되었습니다.");
+        api.defaults.headers.common["authorization"] = `Bearer ${newAccessToken}`;
 
-        api.defaults.headers.common.Authorization = `Bearer ${newAccessToken}`;
-        originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+        originalRequest.headers.authorization = `Bearer ${newAccessToken}`;
 
         return api(originalRequest);
       } catch (err) {
         console.error(
           "Refresh token이 만료되었거나 오류가 발생했습니다. 로그아웃 처리 필요."
         );
-
-        Cookies.remove("accessToken");
-        Cookies.remove("refreshToken");
-
         return Promise.reject(err);
       }
     }

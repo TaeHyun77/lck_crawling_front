@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
+import api from "../api/api";
 import Header from "../header/Header";
 import { Link, useLocation } from "react-router-dom";
 import "./Ranking.css";
@@ -10,7 +10,7 @@ const Ranking = () => {
 
   const getRankingList = async () => {
     try {
-      const response = await axios.get("http://localhost:8080/ranking");
+      const response = await api.get("http://localhost:8080/ranking");
       const data = response.data;
 
       setRankingList(data);
@@ -29,7 +29,6 @@ const Ranking = () => {
     <>
       <Header />
 
-      {/* Navigation options */}
       <div className="options">
         <Link
           to="/"

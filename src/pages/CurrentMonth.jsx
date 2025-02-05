@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import Header from "../header/Header";
 import api from "../api/api";
-import "../pages/Home.css";
+import "../pages/CurrentMonth.css";
 import { FaArrowRightLong } from "react-icons/fa6";
 
 const Home = () => {

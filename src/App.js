@@ -1,16 +1,16 @@
 import "./App.css";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import Home from "./pages/Home";
+import CurrentMonth from "./pages/CurrentMonth";
 import Rank from "./pages/Ranking";
 import OtherMonth from "./pages/OtherMonth";
-import LoginState from "./LoginState";
+import LoginState from "./state/LoginState";
 
 function App() {
   return (
     <BrowserRouter>
       <LoginState>
         <Routes>
-          <Route path="/" element={<Home />} />
+          <Route path="/" element={<CurrentMonth />} />
           <Route path="/ranking" element={<Rank />} />
           <Route path="/otherMonth" element={<OtherMonth />} />
         </Routes>
