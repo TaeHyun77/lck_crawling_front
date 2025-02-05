@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import axios from "axios";
+import api from "../api/api";
 import Header from "../header/Header";
-import "../pages/Home.css";
+import "../pages/CurrentMonth.css";
 import quest from "../img/quest.png";
 
 const OtherMonth = () => {
@@ -14,7 +14,7 @@ const OtherMonth = () => {
 
   const getScheduleList = async () => {
     try {
-      const response = await axios.get("http://localhost:8080/schedules");
+      const response = await api.get("http://localhost:8080/schedules");
       const data = response.data;
 
       const monthSchedules = data.filter((schedule) => schedule.month === 2);
@@ -125,7 +125,7 @@ const OtherMonth = () => {
                     )}
                   </div>
                   <div className="team2-info">
-                    {schedule.teamImg1 == null ? (
+                    {schedule.teamImg2 == null ? (
                       <img src={quest} />
                     ) : (
                       <img src={schedule.teamImg2} />
