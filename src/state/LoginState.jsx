@@ -46,12 +46,12 @@ const LoginState = ({ children }) => {
   };
 
   const loginSetting = (userData, accessToken) => {
-    const { username, role} = userData;
+    const { username, role, name, email, teamNames} = userData;
 
     api.defaults.headers.common["authorization"] = `Bearer ${accessToken}`;
     setIsLogin(true);
 
-    setUserInfo({ username, role});
+    setUserInfo({ username, role, name, email, teamNames});
   };
 
   const logout = () => {
@@ -67,7 +67,7 @@ const LoginState = ({ children }) => {
 
   return (
     <LoginContext.Provider
-      value={{ isLogin, setIsLogin, userInfo, roles, logincheck }}
+      value={{ isLogin, setIsLogin, userInfo, roles, logincheck, setUserInfo }}
     >
       {children}
     </LoginContext.Provider>

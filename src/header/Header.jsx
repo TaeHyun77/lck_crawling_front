@@ -1,15 +1,31 @@
-import React, { useContext, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import React, {
+  useContext,
+  useEffect,
+  useNavigate,
+  useState,
+  useRef,
+} from "react";
+import { Link, useLocation } from "react-router-dom";
 import "./Header.css";
 import LckLogo from "../img/Logo.png";
 import { LoginContext } from "../state/LoginState";
 import api from "../api/api";
-import axios from "axios"
+import axios from "axios";
 import Cookies from "js-cookie";
 
 const Header = () => {
-  const { isLogin, setIsLogin, logincheck, userInfo } = useContext(LoginContext);
-  const navigate = useNavigate();
+  const { isLogin, setIsLogin, logincheck, userInfo, setUserInfo } =
+    useContext(LoginContext);
+
+  const navigate = useNavigate;
+  const location = useLocation();
+
+  const [scheduleList, setScheduleList] = useState([]);
+  const [teamList, setTeamList] = useState([]);
+  const [selectedTeams, setSelectedTeams] = useState([]);
+
+  const dropdownRef = useRef(null);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   console.log("로그인 여부 : " + isLogin);
 
@@ -17,7 +33,7 @@ const Header = () => {
     try {
       const response = await axios.get("http://localhost:8080/googleLogin");
       const data = response.data;
-      console.log(data)
+      console.log(data);
 
       if (data.url) {
         window.location.href = data.url;
@@ -33,6 +49,7 @@ const Header = () => {
     if (check) {
       try {
         const response = await api.post("/googleLogout");
+
         if (response.data) {
           Cookies.remove("authorization");
           api.defaults.headers.common.authorization = undefined;
@@ -48,12 +65,114 @@ const Header = () => {
     }
   };
 
+  const getScheduleList = async () => {
+    try {
+      const response = await api.get("http://localhost:8080/schedules");
+      const data = response.data;
+
+      const monthSchedules = data.filter((schedule) => schedule.month === 2);
+
+      setScheduleList(monthSchedules);
+    } catch (error) {
+      console.error("LCK 일정 리스트를 불러오지 못했습니다.", error);
+    }
+  };
+
+  const getUniqueTeamList = () => {
+    const uniqueTeams = new Set();
+    const teamArray = [];
+
+    scheduleList.forEach((schedule) => {
+      if (
+        schedule.team1 &&
+        !uniqueTeams.has(schedule.team1) &&
+        schedule.team1 != "TBD"
+      ) {
+        uniqueTeams.add(schedule.team1);
+        teamArray.push({ name: schedule.team1, img: schedule.teamImg1 });
+      }
+      if (
+        schedule.team2 &&
+        !uniqueTeams.has(schedule.team2) &&
+        schedule.team2 != "TBD"
+      ) {
+        uniqueTeams.add(schedule.team2);
+        teamArray.push({ name: schedule.team2, img: schedule.teamImg2 });
+      }
+    });
+
+    setTeamList(teamArray);
+    console.log("unique", teamArray);
+  };
+
+  const handleClickButton = async (selectedTeams) => {
+    const check = window.confirm("팀을 변경하시겠습니까 ?");
+
+    if (check) {
+      try {
+        const response = await api.post("http://localhost:8080/team", {
+          username: userInfo?.username,
+          selectedTeams: selectedTeams,
+        });
+
+        if (response) {
+          alert("팀 변경 성공 !");
+
+          setUserInfo((prevUserInfo) => ({
+            ...prevUserInfo,
+            teamNames: selectedTeams, // 변경된 팀 목록 반영
+          }));
+        }
+
+        console.log("서버 응답:", response.data);
+      } catch (error) {
+        console.error("요청 실패:", error);
+      }
+    }
+  };
+
+  // 팀 선택/해제 함수
+  const handleTeamSelection = (teamName) => {
+    setSelectedTeams((prevSelectedTeams) =>
+      prevSelectedTeams.includes(teamName)
+        ? prevSelectedTeams.filter((team) => team !== teamName)
+        : [...prevSelectedTeams, teamName]
+    );
+  };
+
+  const handleClickOutside = (event) => {
+    if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+      setIsDropdownOpen(false);
+    }
+  };
+
+  const toggleDropdown = () => {
+    setIsDropdownOpen(!isDropdownOpen);
+  };
+
   const handleLogout = () => {
     googleLogout();
   };
 
   useEffect(() => {
     logincheck();
+  }, []);
+
+  useEffect(() => {
+    getScheduleList();
+  }, []);
+
+  useEffect(() => {
+    if (scheduleList.length > 0) {
+      getUniqueTeamList();
+    }
+  }, [scheduleList]);
+
+  useEffect(() => {
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
   }, []);
 
   return (
@@ -72,12 +191,118 @@ const Header = () => {
           <img src={LckLogo} className="LckLogoImg" />
           <div className="logContainer">
             {" "}
-            <p className="loginName">{userInfo?.username} 님</p>
+            <p className="loginName">
+              <span
+                style={{
+                  marginRight: "10px",
+                  display: "flex",
+                  alignItems: "center",
+                }}
+              >
+                {userInfo?.teamNames?.length > 0 &&
+                  userInfo.teamNames.map((teamName, index) => {
+                    const team = teamList.find((t) => t.name === teamName);
+                    return team ? (
+                      <img
+                        key={index}
+                        src={team.img}
+                        alt={team.name}
+                        style={{
+                          width: "30px",
+                          height: "30px",
+                          marginRight: "5px",
+                        }}
+                      />
+                    ) : null;
+                  })}
+              </span>
+              <span>{userInfo?.name} 님</span>
+            </p>
             <button onClick={handleLogout} className="logoutButton">
-              Google 로그아웃
+              로그아웃
             </button>
           </div>
         </div>
+      )}
+
+      <div className="options">
+        <Link
+          to="/otherMonth"
+          className={`nav-link ${
+            location.pathname === "/otherMonth" || location.pathname === "/"
+              ? "active"
+              : ""
+          }`}
+        >
+          일정
+        </Link>
+        <Link
+          to="/ranking"
+          className={`nav-link ${
+            location.pathname === "/ranking" ? "active" : ""
+          }`}
+        >
+          순위
+        </Link>
+      </div>
+
+      {location.pathname !== "/ranking" && (
+        <>
+          <div className="selector-container">
+            <button className="team_button">관심 있는 팀 경기만 보기</button>
+
+            <div className="team-selector" ref={dropdownRef}>
+              <div className="team-dropdown-box" onClick={toggleDropdown}>
+                <p className="selector-text">관심있는 팀 선택</p>
+              </div>
+
+              {isDropdownOpen && (
+                <div className="team-list-container">
+                  {teamList.map((team, index) => (
+                    <label key={index} className="team-item">
+                      <input
+                        type="checkbox"
+                        checked={selectedTeams.includes(team.name)}
+                        onChange={() => handleTeamSelection(team.name)}
+                      />
+                      <img
+                        src={team.img}
+                        alt={team.name}
+                        className="team-logo"
+                      />
+                      <p>{team.name}</p>
+                    </label>
+                  ))}
+                  <button
+                    className="team-list-button"
+                    onClick={() => handleClickButton(selectedTeams)}
+                  >
+                    선택
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="month">
+            <Link
+              to="/"
+              className={`month-nav-link ${
+                location.pathname === "/" ? "active" : ""
+              }`}
+            >
+              1월
+            </Link>
+            <Link
+              to="/otherMonth"
+              className={`month-nav-link ${
+                location.pathname === "/otherMonth" ? "active" : ""
+              }`}
+            >
+              2월
+            </Link>
+          </div>
+        </>
       )}
     </header>
   );

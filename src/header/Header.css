@@ -9,9 +9,9 @@
 
 .LckLogoImg {
   position: absolute;
-  left: 50%; 
+  left: 50%;
   top: 50px;
-  transform: translateX(-50%); 
+  transform: translateX(-50%);
   width: 300px;
   height: 150px;
   border-radius: 10px;
@@ -26,6 +26,7 @@
 }
 
 .loginName {
+  display: flex;
   font-size: 18px;
   font-weight: bold;
 }
@@ -60,4 +61,177 @@
 
 button:hover {
   transform: scale(1.03);
+}
+
+/* 일정, 순위 css */
+.options {
+  display: flex;
+  width: 80%;
+  justify-content: center;
+  align-items: center;
+  gap: 100px;
+  font-size: 18px;
+  margin: 0px auto;
+  margin-top: 40px;
+}
+
+.nav-link {
+  text-decoration: none;
+  font-size: 18px;
+  color: gray;
+  padding: 5px 10px;
+  border-radius: 5px;
+  transition: color 0.3s, background-color 0.3s;
+}
+
+.nav-link.active {
+  color: white;
+  background-color: #007bff;
+  font-weight: bold;
+}
+
+/* 달 별 일정 css */
+.month {
+  display: flex;
+  position: relative;
+  width: 80%;
+  line-height: 48px;
+  margin: 30px auto 20px auto;
+  font-size: 15px;
+  gap: 30px;
+  background-color: white;
+  border-top: 1px solid rgb(201, 188, 188);
+  border-bottom: 1px solid rgb(201, 188, 188);
+  color: black;
+}
+
+.month-nav-link {
+  text-decoration: none;
+  font-size: 18px;
+  padding: 5px 20px;
+  border-radius: 5px;
+  transition: color 0.3s, background-color 0.3s;
+}
+
+.month-nav-link.active {
+  border-bottom: 2px solid blue;
+  border-radius: 0px;
+  font-weight: bold;
+}
+
+.selector-container {
+  width: 80%;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.team_button {
+  box-sizing: border-box;
+  padding: 10px 20px;
+  font-size: 15px;
+  font-weight: 700;
+  border-radius: 10px;
+  border: none;
+  color: red;
+  transition: transform 0.2s;
+  background-color: rgb(244, 239, 239);
+  color: black;
+}
+
+/* 선택 박스 css */
+
+.team-selector {
+  position: relative;
+  width: 260px;
+  margin-bottom: 20px;
+  margin-left: auto;
+}
+
+.team-dropdown-box {
+  display: flex;
+  background-color: white;
+  text-align: center;
+  border-radius: 8px;
+  cursor: pointer;
+  border: 1px solid #ccc;
+}
+
+.team-dropdown-box:hover {
+  transform: scale(1.01);
+}
+
+.selector-text {
+  padding-left: 10px;
+}
+
+.team-list-container {
+  position: absolute;
+  top: 50px;
+  width: 100%;
+  max-height: 300px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  background-color: #fff;
+  border-radius: 8px;
+  z-index: 10;
+}
+
+.team-item {
+  display: flex;
+  align-items: center;
+  padding: 8px;
+  border-bottom: 1px solid #eee;
+  cursor: pointer;
+}
+
+.team-list-button {
+  width: 225px;
+  height: 40px;
+  margin: 10px;
+  align-items: center;
+  border-radius: 20px;
+  border: none;
+  background-color: #eee;
+}
+
+.team-item:last-child {
+  border-bottom: none;
+}
+
+.team-logo {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 10px;
+}
+
+.team-item input {
+  margin-right: 10px;
+}
+
+.team-list-container::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.team-list-container::-webkit-scrollbar-track {
+  background: #f0f0f0;
+  border-radius: 4px;
+}
+
+.team-list-container::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+.team-list-container::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+.team-list-container::-webkit-scrollbar-thumb:horizontal {
+  background: #777;
 }
