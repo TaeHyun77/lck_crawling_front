@@ -80,23 +80,6 @@ const Home = () => {
     <>
       <Header />
 
-      <div className="options">
-        <Link
-          to="/home"
-          className={`nav-link ${location.pathname === "/" ? "active" : ""}`}
-        >
-          일정
-        </Link>
-        <Link
-          to="/ranking"
-          className={`nav-link ${
-            location.pathname === "/rank" ? "active" : ""
-          }`}
-        >
-          순위
-        </Link>
-      </div>
-
       <div className="HomeContainer" style={{ marginTop: "30px" }}>
         <div className="schedule-container">
           {Object.entries(groupedFilteredSchedules).map(([date, schedules]) => (
@@ -153,24 +136,6 @@ const Home = () => {
         </div>
 
         <div className="schedule-container">
-          <div className="otherMonth">
-            <Link
-              to="/home"
-              className={`month-nav-link ${
-                location.pathname === "/" ? "active" : ""
-              }`}
-            >
-              1월
-            </Link>
-            <Link
-              to="/otherMonth"
-              className={`month-nav-link ${
-                location.pathname === "/otherMonth" ? "active" : ""
-              }`}
-            >
-              2월
-            </Link>
-          </div>
           {Object.entries(groupedSchedules).map(([date, schedules]) => (
             <div key={date} className="schedule-group">
               <div className="data-container">

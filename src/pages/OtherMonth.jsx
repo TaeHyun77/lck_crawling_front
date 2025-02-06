@@ -1,16 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef, useContext } from "react";
 import { Link, useLocation } from "react-router-dom";
+import { LoginContext } from "../state/LoginState";
 import api from "../api/api";
 import Header from "../header/Header";
 import "../pages/CurrentMonth.css";
 import quest from "../img/quest.png";
 
 const OtherMonth = () => {
-  const location = useLocation();
+  const { userInfo } = useContext(LoginContext);
   const [scheduleList, setScheduleList] = useState([]);
-
-//   const today = new Date();
-//   const month = Number(`${today.getMonth() + 1}`);
 
   const getScheduleList = async () => {
     try {
@@ -35,8 +33,6 @@ const OtherMonth = () => {
     return acc;
   }, {});
 
-  console.log(scheduleList);
-
   useEffect(() => {
     getScheduleList();
   }, []);
@@ -45,56 +41,14 @@ const OtherMonth = () => {
     <>
       <Header />
 
-      <div className="options">
-        <Link
-          to="/otherMonth"
-          className={`nav-link ${
-            location.pathname === "/otherMonth" ? "active" : ""
-          }`}
-        >
-          일정
-        </Link>
-        <Link
-          to="/ranking"
-          className={`nav-link ${
-            location.pathname === "/rank" ? "active" : ""
-          }`}
-        >
-          순위
-        </Link>
-      </div>
-
       <div className="HomeContainer" style={{ marginTop: "30px" }}>
-        <div className="schedule-container">
-          <div className="otherMonth">
-            <Link
-              to="/"
-              className={`month-nav-link ${
-                location.pathname === "/" ? "active" : ""
-              }`}
-            >
-              1월
-            </Link>
-            <Link
-              to="/otherMonth"
-              className={`month-nav-link ${
-                location.pathname === "/otherMonth" ? "active" : ""
-              }`}
-            >
-              2월
-            </Link>
-          </div>
-        </div>
         {Object.entries(groupedSchedules).map(([date, schedules]) => (
           <div key={date} className="schedule-group">
             <div className="data-container">
               <p className="schedule-date">{date}</p>
             </div>
             {schedules.map((schedule, index) => (
-              <div
-                key={index}
-                className="schedule-card"
-              >
+              <div key={index} className="schedule-card">
                 <div className="time">{schedule.startTime}</div>
                 <div className="matchStatus-info">
                   {schedule.matchStatus === "종료" ? (
@@ -104,8 +58,8 @@ const OtherMonth = () => {
                   )}
                 </div>
                 <div className="stageType">
-                    <p>{schedule.stageType}</p>
-                  </div>
+                  <p>{schedule.stageType}</p>
+                </div>
                 <div className="match-info">
                   <div className="team1-info">
                     <p className="team1">{schedule.team1}</p>

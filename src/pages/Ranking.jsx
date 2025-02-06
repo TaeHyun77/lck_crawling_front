@@ -29,23 +29,6 @@ const Ranking = () => {
     <>
       <Header />
 
-      <div className="options">
-        <Link
-          to="/"
-          className={`nav-link ${location.pathname === "/" ? "active" : ""}`}
-        >
-          일정
-        </Link>
-        <Link
-          to="/ranking"
-          className={`nav-link ${
-            location.pathname === "/ranking" ? "active" : ""
-          }`}
-        >
-          순위
-        </Link>
-      </div>
-
       <div className="rankingContainer">
         <div className="rankingHeader">
           <div className="teamRank">팀 순위</div>
