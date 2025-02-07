@@ -8,6 +8,8 @@ const LoginState = ({ children }) => {
   const [isLogin, setIsLogin] = useState(false);
   const [roles, setRoles] = useState({ isUser: false, isAdmin: false });
   const [userInfo, setUserInfo] = useState({});
+  const [isShowingPrefered, setIsShowingPrefered] = useState(false);
+
 
   const logincheck = async () => {
 
@@ -67,7 +69,7 @@ const LoginState = ({ children }) => {
 
   return (
     <LoginContext.Provider
-      value={{ isLogin, setIsLogin, userInfo, roles, logincheck, setUserInfo }}
+      value={{ isLogin, setIsLogin, userInfo, roles, logincheck, setUserInfo, isShowingPrefered, setIsShowingPrefered}}
     >
       {children}
     </LoginContext.Provider>

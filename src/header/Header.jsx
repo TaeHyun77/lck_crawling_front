@@ -1,11 +1,5 @@
-import React, {
-  useContext,
-  useEffect,
-  useNavigate,
-  useState,
-  useRef,
-} from "react";
-import { Link, useLocation } from "react-router-dom";
+import React, { useContext, useEffect, useState, useRef } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import "./Header.css";
 import LckLogo from "../img/Logo.png";
 import { LoginContext } from "../state/LoginState";
@@ -14,10 +8,17 @@ import axios from "axios";
 import Cookies from "js-cookie";
 
 const Header = () => {
-  const { isLogin, setIsLogin, logincheck, userInfo, setUserInfo } =
-    useContext(LoginContext);
+  const {
+    isLogin,
+    setIsLogin,
+    logincheck,
+    userInfo,
+    setUserInfo,
+    isShowingPrefered,
+    setIsShowingPrefered,
+  } = useContext(LoginContext);
 
-  const navigate = useNavigate;
+  const navigate = useNavigate();
   const location = useLocation();
 
   const [scheduleList, setScheduleList] = useState([]);
@@ -117,7 +118,7 @@ const Header = () => {
 
         if (response) {
           alert("팀 변경 성공 !");
-
+          toggleDropdown();
           setUserInfo((prevUserInfo) => ({
             ...prevUserInfo,
             teamNames: selectedTeams, // 변경된 팀 목록 반영
@@ -131,7 +132,7 @@ const Header = () => {
     }
   };
 
-  // 팀 선택/해제 함수
+  // 팀 선택 / 해제 함수
   const handleTeamSelection = (teamName) => {
     setSelectedTeams((prevSelectedTeams) =>
       prevSelectedTeams.includes(teamName)
@@ -140,6 +141,7 @@ const Header = () => {
     );
   };
 
+  // 팀 선택 후 다른 영역 클릭 시 창 닫히게
   const handleClickOutside = (event) => {
     if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
       setIsDropdownOpen(false);
@@ -154,11 +156,22 @@ const Header = () => {
     googleLogout();
   };
 
+  const togglePreferedGames = () => {
+    setIsShowingPrefered((prev) => !prev);
+  };
+
   useEffect(() => {
-    logincheck();
+    const currentMonth = new Date().getMonth() + 1;
+    const queryParams = new URLSearchParams(location.search);
+    const monthParam = queryParams.get("month");
+
+    if (!monthParam) {
+      navigate(`/?month=${currentMonth}`, { replace: true });
+    }
   }, []);
 
   useEffect(() => {
+    logincheck();
     getScheduleList();
   }, []);
 
@@ -249,11 +262,13 @@ const Header = () => {
       {location.pathname !== "/ranking" && (
         <>
           <div className="selector-container">
-            <button className="team_button">관심 있는 팀 경기만 보기</button>
+            <button className="team_button" onClick={togglePreferedGames}>
+              {isShowingPrefered ? "전체 경기" : "선호하는 팀 경기"}
+            </button>
 
             <div className="team-selector" ref={dropdownRef}>
               <div className="team-dropdown-box" onClick={toggleDropdown}>
-                <p className="selector-text">관심있는 팀 선택</p>
+                <p className="selector-text">선호하는 팀 선택</p>
               </div>
 
               {isDropdownOpen && (
@@ -286,17 +301,17 @@ const Header = () => {
 
           <div className="month">
             <Link
-              to="/"
+              to="/?month=1"
               className={`month-nav-link ${
-                location.pathname === "/" ? "active" : ""
+                location.search.includes("month=1") ? "active" : ""
               }`}
             >
               1월
             </Link>
             <Link
-              to="/otherMonth"
+              to="/?month=2"
               className={`month-nav-link ${
-                location.pathname === "/otherMonth" ? "active" : ""
+                location.search.includes("month=2") ? "active" : ""
               }`}
             >
               2월

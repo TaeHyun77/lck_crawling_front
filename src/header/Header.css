@@ -129,6 +129,7 @@ button:hover {
 }
 
 .team_button {
+  width: 155px;
   box-sizing: border-box;
   padding: 10px 20px;
   font-size: 15px;
