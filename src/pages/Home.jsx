@@ -1,21 +1,31 @@
 import React, { useEffect, useState, useRef, useContext } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { LoginContext } from "../state/LoginState";
 import api from "../api/api";
 import Header from "../header/Header";
-import "../pages/CurrentMonth.css";
+import "../pages/Home.css";
 import quest from "../img/quest.png";
 
 const OtherMonth = () => {
-  const { userInfo } = useContext(LoginContext);
+  const { userInfo, isShowingPrefered } =
+    useContext(LoginContext);
   const [scheduleList, setScheduleList] = useState([]);
+  const [preperScheduleList, setPreperScheduleList] = useState([]);
+
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const selectedMonth = searchParams.get("month")
+    ? parseInt(searchParams.get("month"))
+    : 2;
 
   const getScheduleList = async () => {
     try {
       const response = await api.get("http://localhost:8080/schedules");
       const data = response.data;
 
-      const monthSchedules = data.filter((schedule) => schedule.month === 2);
+      const monthSchedules = data.filter(
+        (schedule) => schedule.month === selectedMonth
+      );
 
       setScheduleList(monthSchedules);
     } catch (error) {
@@ -23,8 +33,12 @@ const OtherMonth = () => {
     }
   };
 
+  const displaySchedules = isShowingPrefered
+    ? preperScheduleList
+    : scheduleList;
+
   // matchDate 기준 경기 일정 정렬
-  const groupedSchedules = scheduleList.reduce((acc, schedule) => {
+  const groupedSchedules = displaySchedules.reduce((acc, schedule) => {
     const { matchDate } = schedule;
     if (!acc[matchDate]) {
       acc[matchDate] = [];
@@ -35,7 +49,18 @@ const OtherMonth = () => {
 
   useEffect(() => {
     getScheduleList();
-  }, []);
+  }, [selectedMonth]);
+
+  useEffect(() => {
+    if (scheduleList.length > 0 && userInfo?.teamNames?.length > 0) {
+      const preperd = scheduleList.filter(
+        (schedule) =>
+          userInfo.teamNames.includes(schedule.team1) ||
+          userInfo.teamNames.includes(schedule.team2)
+      );
+      setPreperScheduleList(preperd);
+    }
+  }, [scheduleList, userInfo?.teamNames]);
 
   return (
     <>
