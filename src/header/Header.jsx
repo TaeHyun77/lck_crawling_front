@@ -161,16 +161,6 @@ const Header = () => {
   };
 
   useEffect(() => {
-    const currentMonth = new Date().getMonth() + 1;
-    const queryParams = new URLSearchParams(location.search);
-    const monthParam = queryParams.get("month");
-
-    if (!monthParam) {
-      navigate(`/?month=${currentMonth}`, { replace: true });
-    }
-  }, []);
-
-  useEffect(() => {
     logincheck();
     getScheduleList();
   }, []);
@@ -240,11 +230,9 @@ const Header = () => {
 
       <div className="options">
         <Link
-          to="/otherMonth"
+          to="/?month=2"
           className={`nav-link ${
-            location.pathname === "/otherMonth" || location.pathname === "/"
-              ? "active"
-              : ""
+            location.search.includes("month=2") || location.search.includes("month=1") ? "active" : ""
           }`}
         >
           일정
