@@ -6,7 +6,7 @@ import Header from "../header/Header";
 import "../pages/Home.css";
 import quest from "../img/quest.png";
 
-const OtherMonth = () => {
+const Home = () => {
   const { userInfo, isShowingPrefered } =
     useContext(LoginContext);
   const [scheduleList, setScheduleList] = useState([]);
@@ -121,4 +121,4 @@ const OtherMonth = () => {
   );
 };
 
-export default OtherMonth;
+export default Home;
