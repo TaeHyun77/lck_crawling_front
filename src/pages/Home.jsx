@@ -7,8 +7,7 @@ import "../pages/Home.css";
 import quest from "../img/quest.png";
 
 const Home = () => {
-  const { userInfo, isShowingPrefered } =
-    useContext(LoginContext);
+  const { userInfo, isShowingPrefered } = useContext(LoginContext);
   const [scheduleList, setScheduleList] = useState([]);
   const [preperScheduleList, setPreperScheduleList] = useState([]);
 

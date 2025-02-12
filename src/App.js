@@ -4,6 +4,9 @@ import Rank from "./pages/Ranking";
 import Home from "./pages/Home";
 import LoginState from "./state/LoginState";
 
+import "./FcmSetting.js";
+
+
 function App() {
   return (
     <BrowserRouter>

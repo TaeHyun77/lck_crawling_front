@@ -19,10 +19,10 @@ const Ranking = () => {
 
   const calculateWinRate = (record) => {
     const match = record.match(/(\d+)W (\d+)L/);
-    if (!match) return "N/A"; 
+    if (!match) return "N/A";
 
-    const wins = parseInt(match[1], 10); 
-    const losses = parseInt(match[2], 10); 
+    const wins = parseInt(match[1], 10);
+    const losses = parseInt(match[2], 10);
     const totalGames = wins + losses;
 
     return totalGames > 0 ? ((wins / totalGames) * 100).toFixed(0) + "%" : "0%";
@@ -32,9 +32,15 @@ const Ranking = () => {
     getRankingList();
   }, []);
 
-  const stage1Teams = RankingList.filter((team) => team.stage === "R1: Group Stage");
-  const stage2Teams = RankingList.filter((team) => team.stage === "R2: Play-In");
-  const stage3Teams = RankingList.filter((team) => team.stage === "R3: Playoffs");
+  const stage1Teams = RankingList.filter(
+    (team) => team.stage === "R1: Group Stage"
+  );
+  const stage2Teams = RankingList.filter(
+    (team) => team.stage === "R2: Play-In"
+  );
+  const stage3Teams = RankingList.filter(
+    (team) => team.stage === "R3: Playoffs"
+  );
 
   return (
     <>
@@ -49,20 +55,35 @@ const Ranking = () => {
               <div>승률</div>
               <div>세트 점수</div>
             </div>
-            <div className="rankingData">
-              {stage1Teams.map((team) => (
-                <div className="rankingRow" key={team.id}>
-                  <div className="teamInfo">
-                    <span className="teamIndex">{team.teamRank} - </span>
-                    <img src={team.img} alt={`${team.teamName} logo`} className="teamLogo" />
-                    <span className="teamName">{team.teamName}</span>
-                  </div>
-                  <div>{team.record}</div>
-                  <div className="win_rate">{calculateWinRate(team.record)}</div>
-                  <div>{team.recordSet}</div>
+
+            {stage1Teams.length > 0 && (
+              <>
+                <div className="teams">Group Baron</div>
+                <div className="rankingData">
+                  {stage1Teams.map((team, index) => (
+                    <>
+                      {index === 5 && <div className="teams">Group Elder</div>}
+                      <div className="rankingRow" key={team.id}>
+                        <div className="teamInfo">
+                          <span className="teamIndex">{team.teamRank} - </span>
+                          <img
+                            src={team.img}
+                            alt={`${team.teamName} logo`}
+                            className="teamLogo"
+                          />
+                          <span className="teamName">{team.teamName}</span>
+                        </div>
+                        <div>{team.record}</div>
+                        <div className="win_rate">
+                          {calculateWinRate(team.record)}
+                        </div>
+                        <div>{team.recordSet}</div>
+                      </div>
+                    </>
+                  ))}
                 </div>
-              ))}
-            </div>
+              </>
+            )}
           </div>
 
           <div className="rankingTable">
@@ -78,11 +99,17 @@ const Ranking = () => {
                 <div className="rankingRow" key={team.id}>
                   <div className="teamInfo">
                     <span className="teamIndex">{team.teamRank} - </span>
-                    <img src={team.img} alt={`${team.teamName} logo`} className="teamLogo" />
+                    <img
+                      src={team.img}
+                      alt={`${team.teamName} logo`}
+                      className="teamLogo"
+                    />
                     <span className="teamName">{team.teamName}</span>
                   </div>
                   <div>{team.record}</div>
-                  <div className="win_rate">{calculateWinRate(team.record)}</div>
+                  <div className="win_rate">
+                    {calculateWinRate(team.record)}
+                  </div>
                   <div>{team.recordSet}</div>
                 </div>
               ))}
@@ -102,11 +129,17 @@ const Ranking = () => {
                 <div className="rankingRow" key={team.id}>
                   <div className="teamInfo">
                     <span className="teamIndex">{team.teamRank} - </span>
-                    <img src={team.img} alt={`${team.teamName} logo`} className="teamLogo" />
+                    <img
+                      src={team.img}
+                      alt={`${team.teamName} logo`}
+                      className="teamLogo"
+                    />
                     <span className="teamName">{team.teamName}</span>
                   </div>
                   <div>{team.record}</div>
-                  <div className="win_rate">{calculateWinRate(team.record)}</div>
+                  <div className="win_rate">
+                    {calculateWinRate(team.record)}
+                  </div>
                   <div>{team.recordSet}</div>
                 </div>
               ))}

@@ -7,6 +7,10 @@ import api from "../api/api";
 import axios from "axios";
 import Cookies from "js-cookie";
 
+import { getToken } from "firebase/messaging";
+import { messaging } from "../FcmSetting.js";
+import "../FcmSetting.js";
+
 const Header = () => {
   const {
     isLogin,
@@ -27,6 +31,8 @@ const Header = () => {
 
   const dropdownRef = useRef(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  const [fcmToken, setFcmToken] = useState("");
 
   console.log("로그인 여부 : " + isLogin);
 
@@ -178,6 +184,64 @@ const Header = () => {
     };
   }, []);
 
+  useEffect(() => {
+    const requestNotificationPermission = async () => {
+      const permission = await Notification.requestPermission();
+      if (permission === "granted") {
+        console.log("알림 권한 허용됨");
+        getFcmToken();
+      } else {
+        console.log("알림 권한 거부됨");
+      }
+    };
+
+    requestNotificationPermission();
+  }, []);
+
+  const getFcmToken = async () => {
+    try {
+      const currentToken = await getToken(messaging, {
+        vapidKey:
+          "BHHqNXnYhMEUf1_m0yL_hOSRYx9L6NBcmj_xvtWEuzSgz2HjCvloLAu_mIiBktpRBgcZLV8veurl_HU6IkdkVAI",
+      });
+
+      if (currentToken) {
+        console.log("FCM 토큰:", currentToken);
+        setFcmToken(currentToken);
+        sendFcmTokenToServer(currentToken, userInfo?.email)
+      } else {
+        console.log("FCM 토큰을 가져오지 못했습니다.");
+      }
+    } catch (err) {
+      console.error("FCM 토큰 가져오는 중 에러 발생:", err);
+    }
+  };
+
+  useEffect(() => {
+    if (isLogin && userInfo?.email) {
+      getFcmToken();
+    }
+  }, [isLogin, userInfo]);
+
+  const sendFcmTokenToServer = async (token, email) => {
+    try {
+      const response = await axios.post("http://localhost:8080/fcm/register", {
+        fcmToken: token,
+        email: email
+      });
+
+      console.log(userInfo.email)
+
+      if (response.status == 200) {
+        console.log("FCM 토큰 서버 전송 완료");
+      } else {
+        console.error("FCM 토큰 서버 전송 실패");
+      }
+    } catch (error) {
+      console.error("FCM 토큰 서버 전송 중 오류:", error);
+    }
+  };
+
   return (
     <header>
       {!isLogin ? (
@@ -232,7 +296,10 @@ const Header = () => {
         <Link
           to="/?month=2"
           className={`nav-link ${
-            location.search.includes("month=2") || location.search.includes("month=1") ? "active" : ""
+            location.search.includes("month=2") ||
+            location.search.includes("month=1")
+              ? "active"
+              : ""
           }`}
         >
           일정
@@ -249,43 +316,47 @@ const Header = () => {
 
       {location.pathname !== "/ranking" && (
         <>
-          <div className="selector-container">
-            <button className="team_button" onClick={togglePreferedGames}>
-              {isShowingPrefered ? "전체 경기" : "선호하는 팀 경기"}
-            </button>
+          {isLogin ? (
+            <div className="selector-container">
+              <button className="team_button" onClick={togglePreferedGames}>
+                {isShowingPrefered ? "전체 경기" : "선호하는 팀 경기"}
+              </button>
 
-            <div className="team-selector" ref={dropdownRef}>
-              <div className="team-dropdown-box" onClick={toggleDropdown}>
-                <p className="selector-text">선호하는 팀 선택</p>
-              </div>
-
-              {isDropdownOpen && (
-                <div className="team-list-container">
-                  {teamList.map((team, index) => (
-                    <label key={index} className="team-item">
-                      <input
-                        type="checkbox"
-                        checked={selectedTeams.includes(team.name)}
-                        onChange={() => handleTeamSelection(team.name)}
-                      />
-                      <img
-                        src={team.img}
-                        alt={team.name}
-                        className="team-logo"
-                      />
-                      <p>{team.name}</p>
-                    </label>
-                  ))}
-                  <button
-                    className="team-list-button"
-                    onClick={() => handleClickButton(selectedTeams)}
-                  >
-                    선택
-                  </button>
+              <div className="team-selector" ref={dropdownRef}>
+                <div className="team-dropdown-box" onClick={toggleDropdown}>
+                  <p className="selector-text">선호하는 팀 선택</p>
                 </div>
-              )}
+
+                {isDropdownOpen && (
+                  <div className="team-list-container">
+                    {teamList.map((team, index) => (
+                      <label key={index} className="team-item">
+                        <input
+                          type="checkbox"
+                          checked={selectedTeams.includes(team.name)}
+                          onChange={() => handleTeamSelection(team.name)}
+                        />
+                        <img
+                          src={team.img}
+                          alt={team.name}
+                          className="team-logo"
+                        />
+                        <p>{team.name}</p>
+                      </label>
+                    ))}
+                    <button
+                      className="team-list-button"
+                      onClick={() => handleClickButton(selectedTeams)}
+                    >
+                      선택
+                    </button>
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
+          ) : (
+            <div></div>
+          )}
 
           <div className="month">
             <Link
