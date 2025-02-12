@@ -41,10 +41,18 @@
   border-bottom: 2px solid #b2bec3;
 }
 
+.teams {
+  display: flex;
+  background-color: #fafbfe;
+  margin: 10px 10px 10px 20px;
+  font-weight: bold;
+}
+
 .rankingRow {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  padding: 10px 0;
+  align-items: center;
+  padding: 20px 0;
   border-bottom: 1px solid #ddd;
 }
 
