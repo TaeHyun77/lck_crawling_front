@@ -6,8 +6,7 @@ import { LoginContext } from "../state/LoginState";
 import api from "../api/api";
 import axios from "axios";
 import Cookies from "js-cookie";
-
-import { getToken } from "firebase/messaging";
+import { getToken, deleteToken } from "firebase/messaging";
 import { messaging } from "../FcmSetting.js";
 import "../FcmSetting.js";
 
@@ -33,6 +32,8 @@ const Header = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const [fcmToken, setFcmToken] = useState("");
+  const [notificationPermission, setNotificationPermission] = useState(null);
+  const [isNotification, setIsNotification] = useState(false);
 
   console.log("로그인 여부 : " + isLogin);
 
@@ -42,8 +43,9 @@ const Header = () => {
       const data = response.data;
       console.log(data);
 
-      if (data.url) {
+      if (response.status == 200) {
         window.location.href = data.url;
+        requestNotificationPermission();
       }
     } catch (error) {
       console.error("Google 로그인 요청 실패:", error);
@@ -72,6 +74,11 @@ const Header = () => {
     }
   };
 
+  const handleLogout = () => {
+    googleLogout();
+  };
+
+  // 일정 정보
   const getScheduleList = async () => {
     try {
       const response = await api.get("http://localhost:8080/schedules");
@@ -85,6 +92,7 @@ const Header = () => {
     }
   };
 
+  // 선호하는 팀 선택 팀 종류 중복 방지를 위함
   const getUniqueTeamList = () => {
     const uniqueTeams = new Set();
     const teamArray = [];
@@ -138,6 +146,128 @@ const Header = () => {
     }
   };
 
+  // 브라우저 알림 권한 선택
+  const requestNotificationPermission = async () => {
+    const permission = await Notification.requestPermission();
+    setNotificationPermission(permission);
+
+    if (permission === "granted") {
+      console.log("알림 권한 허용됨");
+
+      if (userInfo?.username && isLogin) {
+        console.log("Permisson : " + permission);
+
+        getFcmToken();
+      }
+    } else {
+      console.log("알림 권한 거부됨");
+    }
+  };
+
+  // fcm 토큰 발급
+  const getFcmToken = async () => {
+    requestNewFcmToken();
+    try {
+      const currentToken = await getToken(messaging, {
+        vapidKey:
+          "BHHqNXnYhMEUf1_m0yL_hOSRYx9L6NBcmj_xvtWEuzSgz2HjCvloLAu_mIiBktpRBgcZLV8veurl_HU6IkdkVAI",
+      });
+
+      if (currentToken) {
+        console.log("FCM 토큰:", currentToken);
+        setFcmToken(currentToken);
+        sendFcmTokenToServer(currentToken, userInfo?.email);
+      } else {
+        console.log(
+          "FCM 토큰이 만료되었거나 존재하지 않습니다. 새로 발급 시도."
+        );
+        requestNewFcmToken();
+      }
+    } catch (err) {
+      console.error("FCM 토큰 가져오는 중 에러 발생:", err);
+      if (err.code === "messaging/token-unsubscribe") {
+        console.log("토큰이 유효하지 않음, 새로 발급 시도.");
+        requestNewFcmToken();
+      }
+    }
+  };
+
+  // fcm 토큰이 만료된 경우 재발급 로직
+  const requestNewFcmToken = async () => {
+    try {
+      const currentToken = await getToken(messaging);
+
+      if (currentToken) {
+        console.log("기존 FCM 토큰 삭제 시도:", currentToken);
+
+        // 기존 토큰 삭제
+        await deleteToken(messaging);
+        console.log("기존 FCM 토큰 삭제 완료");
+      }
+
+      // 새로운 토큰 발급
+      const newToken = await getToken(messaging, {
+        vapidKey:
+          "BHHqNXnYhMEUf1_m0yL_hOSRYx9L6NBcmj_xvtWEuzSgz2HjCvloLAu_mIiBktpRBgcZLV8veurl_HU6IkdkVAI",
+      });
+
+      if (newToken) {
+        console.log("새로운 FCM 토큰 발급:", newToken);
+        setFcmToken(newToken);
+        sendFcmTokenToServer(newToken, userInfo?.email);
+      } else {
+        console.error("새로운 FCM 토큰 발급 실패");
+      }
+    } catch (err) {
+      console.error("새로운 FCM 토큰 요청 중 오류 발생:", err);
+    }
+  };
+
+  // fcm 토큰 서버 전달
+  const sendFcmTokenToServer = async (token, email) => {
+    try {
+      const response = await axios.post("http://localhost:8080/fcm/register", {
+        fcmToken: token,
+        email: email,
+      });
+
+      console.log(userInfo.email);
+
+      if (response.status == 200) {
+        console.log("FCM 토큰 서버 전송 완료");
+      } else {
+        console.error("FCM 토큰 서버 전송 실패");
+      }
+    } catch (error) {
+      console.error("FCM 토큰 서버 전송 중 오류:", error);
+    }
+  };
+
+  // 알림 허용 여부 전달
+  const sendNotificationPermission = async (notificationPermission, email) => {
+    console.log("Permisson : " + notificationPermission);
+
+    try {
+      const response = await axios.post(
+        "http://localhost:8080/user/notificationPermission",
+        {
+          notificationPermission: notificationPermission,
+          email: email,
+        }
+      );
+
+      console.log("Permisson : " + notificationPermission);
+
+      if (response.status == 200) {
+        console.log("알람 허용 여부 전송 완료");
+      } else {
+        console.error("알람 허용 여부 전송 실패");
+      }
+    } catch (error) {
+      console.error("알람 허용 여부 전송 오류", error);
+    }
+  };
+
   // 팀 선택 / 해제 함수
   const handleTeamSelection = (teamName) => {
     setSelectedTeams((prevSelectedTeams) =>
@@ -154,17 +284,29 @@ const Header = () => {
     }
   };
 
+  // 팀 선택 드롭다운 버튼 전환
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
   };
 
-  const handleLogout = () => {
-    googleLogout();
-  };
-
+  // 선호하는 팀 경기 버튼 전환
   const togglePreferedGames = () => {
     setIsShowingPrefered((prev) => !prev);
   };
+
+  const toggleNotification = () => {
+    const check = window.confirm("알림 설정을 변경하시겠습니까 ?");
+
+    if (check) {
+      setIsNotification((prev) => !prev);
+    }
+  };
+
+  useEffect(() => {
+    if (userInfo?.email) {
+      sendNotificationPermission(isNotification, userInfo.email);
+    }
+  }, [isNotification, userInfo?.email]);
 
   useEffect(() => {
     logincheck();
@@ -185,62 +327,10 @@ const Header = () => {
   }, []);
 
   useEffect(() => {
-    const requestNotificationPermission = async () => {
-      const permission = await Notification.requestPermission();
-      if (permission === "granted") {
-        console.log("알림 권한 허용됨");
-        getFcmToken();
-      } else {
-        console.log("알림 권한 거부됨");
-      }
-    };
-
-    requestNotificationPermission();
-  }, []);
-
-  const getFcmToken = async () => {
-    try {
-      const currentToken = await getToken(messaging, {
-        vapidKey:
-          "BHHqNXnYhMEUf1_m0yL_hOSRYx9L6NBcmj_xvtWEuzSgz2HjCvloLAu_mIiBktpRBgcZLV8veurl_HU6IkdkVAI",
-      });
-
-      if (currentToken) {
-        console.log("FCM 토큰:", currentToken);
-        setFcmToken(currentToken);
-        sendFcmTokenToServer(currentToken, userInfo?.email)
-      } else {
-        console.log("FCM 토큰을 가져오지 못했습니다.");
-      }
-    } catch (err) {
-      console.error("FCM 토큰 가져오는 중 에러 발생:", err);
-    }
-  };
-
-  useEffect(() => {
     if (isLogin && userInfo?.email) {
       getFcmToken();
     }
   }, [isLogin, userInfo]);
-
-  const sendFcmTokenToServer = async (token, email) => {
-    try {
-      const response = await axios.post("http://localhost:8080/fcm/register", {
-        fcmToken: token,
-        email: email
-      });
-
-      console.log(userInfo.email)
-
-      if (response.status == 200) {
-        console.log("FCM 토큰 서버 전송 완료");
-      } else {
-        console.error("FCM 토큰 서버 전송 실패");
-      }
-    } catch (error) {
-      console.error("FCM 토큰 서버 전송 중 오류:", error);
-    }
-  };
 
   return (
     <header>
@@ -320,6 +410,10 @@ const Header = () => {
             <div className="selector-container">
               <button className="team_button" onClick={togglePreferedGames}>
                 {isShowingPrefered ? "전체 경기" : "선호하는 팀 경기"}
+              </button>
+
+              <button className="notification_btn" onClick={toggleNotification}>
+                {!isNotification ? "알림" : "알림 해제"}
               </button>
 
               <div className="team-selector" ref={dropdownRef}>
