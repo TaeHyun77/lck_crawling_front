@@ -165,7 +165,6 @@ button:hover {
 /* 선택 박스 css */
 
 .team-selector {
-  display: flex;
   position: relative;
   width: 260px;
   margin-bottom: 20px;
