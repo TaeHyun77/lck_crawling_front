@@ -48,12 +48,12 @@ const LoginState = ({ children }) => {
   };
 
   const loginSetting = (userData, accessToken) => {
-    const { username, role, name, email, teamNames} = userData;
+    const { username, role, name, email, teamNames, notificationPermission} = userData;
 
     api.defaults.headers.common["authorization"] = `Bearer ${accessToken}`;
     setIsLogin(true);
 
-    setUserInfo({ username, role, name, email, teamNames});
+    setUserInfo({ username, role, name, email, teamNames, notificationPermission});
   };
 
   const logout = () => {
