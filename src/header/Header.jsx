@@ -24,24 +24,31 @@ const Header = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const [scheduleList, setScheduleList] = useState([]);
-  const [teamList, setTeamList] = useState([]);
-  const [selectedTeams, setSelectedTeams] = useState([]);
+  // 경기 일정 리스트
+  const [scheduleList, setScheduleList] = useState([]); 
+  // 고유한 팀 리스트
+  const [teamList, setTeamList] = useState([]); 
+  // 사용자가 선택한 선호하는 팀 리스트
+  const [selectedTeams, setSelectedTeams] = useState([]); 
 
+  // 팀 선택 드랍다운 관련
   const dropdownRef = useRef(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
+  // Fcm 토큰 값
   const [fcmToken, setFcmToken] = useState("");
+
+  // 웹 알림 권한 값
   const [notificationPermission, setNotificationPermission] = useState(null);
+  // 사용자의 알림 허용 여부
   const [isNotification, setIsNotification] = useState(false);
 
-  console.log("로그인 여부 : " + isLogin);
+  console.log("로그인 상태 : " + isLogin);
 
   const onGoogleLogin = async () => {
     try {
       const response = await axios.get("http://localhost:8080/googleLogin");
       const data = response.data;
-      console.log(data);
 
       if (response.status == 200) {
         window.location.href = data.url;
@@ -92,7 +99,7 @@ const Header = () => {
     }
   };
 
-  // 선호하는 팀 선택 팀 종류 중복 방지를 위함
+  // 고유한 팀 이름 목록
   const getUniqueTeamList = () => {
     const uniqueTeams = new Set();
     const teamArray = [];
@@ -120,6 +127,7 @@ const Header = () => {
     console.log("unique", teamArray);
   };
 
+  // 선호하는 팀 선택
   const handleClickButton = async (selectedTeams) => {
     const check = window.confirm("팀을 변경하시겠습니까 ?");
 
@@ -174,7 +182,6 @@ const Header = () => {
       });
 
       if (currentToken) {
-        console.log("FCM 토큰:", currentToken);
         setFcmToken(currentToken);
         sendFcmTokenToServer(currentToken, userInfo?.email);
       } else {
@@ -198,7 +205,7 @@ const Header = () => {
       const currentToken = await getToken(messaging);
 
       if (currentToken) {
-        console.log("기존 FCM 토큰 삭제 시도:", currentToken);
+        console.log("기존 FCM 토큰 삭제 시도");
 
         // 기존 토큰 삭제
         await deleteToken(messaging);
@@ -212,7 +219,7 @@ const Header = () => {
       });
 
       if (newToken) {
-        console.log("새로운 FCM 토큰 발급:", newToken);
+        console.log("새로운 FCM 토큰 발급");
         setFcmToken(newToken);
         sendFcmTokenToServer(newToken, userInfo?.email);
       } else {
@@ -268,6 +275,25 @@ const Header = () => {
     }
   };
 
+  
+  const UserNotification = async () => {
+    const check = window.confirm("알림 설정을 변경하시겠습니까 ?");
+
+    if (check) {
+      const newNotificationState = !isNotification;
+      setIsNotification(newNotificationState);
+
+      // userInfo 업데이트하여 UI에 반영
+      setUserInfo((prevUserInfo) => ({
+        ...prevUserInfo,
+        notificationPermission: newNotificationState,
+      }));
+
+      // 서버에 알림 설정 업데이트 요청
+      await sendNotificationPermission(newNotificationState, userInfo?.email);
+    }
+  };
+
   // 팀 선택 / 해제 함수
   const handleTeamSelection = (teamName) => {
     setSelectedTeams((prevSelectedTeams) =>
@@ -294,24 +320,17 @@ const Header = () => {
     setIsShowingPrefered((prev) => !prev);
   };
 
-  const toggleNotification = () => {
-    const check = window.confirm("알림 설정을 변경하시겠습니까 ?");
-
-    if (check) {
-      setIsNotification((prev) => !prev);
-    }
-  };
-
-  useEffect(() => {
-    if (userInfo?.email) {
-      sendNotificationPermission(isNotification, userInfo.email);
-    }
-  }, [isNotification, userInfo?.email]);
-
   useEffect(() => {
     logincheck();
     getScheduleList();
   }, []);
+
+  // 사용자가 변경된 경우 user noti 값 설정
+  useEffect(() => {
+    if (userInfo) {
+      setIsNotification(Boolean(userInfo.notificationPermission));
+    }
+  }, [userInfo]);
 
   useEffect(() => {
     if (scheduleList.length > 0) {
@@ -412,7 +431,7 @@ const Header = () => {
                 {isShowingPrefered ? "전체 경기" : "선호하는 팀 경기"}
               </button>
 
-              <button className="notification_btn" onClick={toggleNotification}>
+              <button className="notification_btn" onClick={UserNotification}>
                 {!isNotification ? "알림" : "알림 해제"}
               </button>
 
