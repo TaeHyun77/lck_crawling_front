@@ -71,7 +71,7 @@ const Header = () => {
           api.defaults.headers.common.authorization = undefined;
           alert("로그아웃 성공!");
           setIsLogin(false);
-          navigate("/");
+          navigate("/?month=4");
         } else {
           console.error("로그아웃 실패");
         }
@@ -85,51 +85,45 @@ const Header = () => {
     googleLogout();
   };
 
-  // 일정 정보
-  const getScheduleList = async () => {
+  const getRankingList = async () => {
     try {
-      const response = await api.get("http://localhost:8080/schedules");
-      const data = response.data;
-
-      const monthSchedules = data.filter((schedule) => schedule.month === 2);
-
-      setScheduleList(monthSchedules);
+      const response = await api.get("http://localhost:8080/ranking");
+      setScheduleList(response.data);
+      console.log("ranking:", response.data);
     } catch (error) {
-      console.error("LCK 일정 리스트를 불러오지 못했습니다.", error);
+      console.error("LCK 순위 리스트를 불러오지 못했습니다.", error);
     }
   };
 
-  // 고유한 팀 이름 목록
+  // 팀 이름 목록
   const getUniqueTeamList = () => {
-    const uniqueTeams = new Set();
     const teamArray = [];
-
+  
+    // 매핑 테이블 정의
+    const teamNameMap = {
+      DK: "Dplus KIA",
+      한화생명: "한화생명e스포츠",
+      농심: "농심 레드포스",
+      DNF: "DN 프릭스",
+      BFX: "BNK 피어엑스",
+      KT: "kt 롤스터",
+      OK저축은행: "OK저축은행 브리온"
+    };
+  
     scheduleList.forEach((schedule) => {
-      if (
-        schedule.team1 &&
-        !uniqueTeams.has(schedule.team1) &&
-        schedule.team1 != "TBD"
-      ) {
-        uniqueTeams.add(schedule.team1);
-        teamArray.push({ name: schedule.team1, img: schedule.teamImg1 });
-      }
-      if (
-        schedule.team2 &&
-        !uniqueTeams.has(schedule.team2) &&
-        schedule.team2 != "TBD"
-      ) {
-        uniqueTeams.add(schedule.team2);
-        teamArray.push({ name: schedule.team2, img: schedule.teamImg2 });
-      }
+      const originalName = schedule.teamName;
+      const displayName = teamNameMap[originalName] || originalName;
+  
+      teamArray.push({ name: displayName, img: schedule.img });
     });
-
+  
     setTeamList(teamArray);
-    console.log("unique", teamArray);
   };
+  
 
   // 선호하는 팀 선택
   const handleClickButton = async (selectedTeams) => {
-    const check = window.confirm("팀을 변경하시겠습니까 ?");
+    const check = window.confirm("선호하는 팀을 변경하시겠습니까 ?");
 
     if (check) {
       try {
@@ -322,7 +316,7 @@ const Header = () => {
 
   useEffect(() => {
     logincheck();
-    getScheduleList();
+    getRankingList();
   }, []);
 
   // 사용자가 변경된 경우 user noti 값 설정
@@ -403,10 +397,11 @@ const Header = () => {
 
       <div className="options">
         <Link
-          to="/?month=2"
+          to="/?month=4"
           className={`nav-link ${
+            location.search.includes("month=1") ||
             location.search.includes("month=2") ||
-            location.search.includes("month=1")
+            location.search.includes("month=4")
               ? "active"
               : ""
           }`}
@@ -472,7 +467,7 @@ const Header = () => {
           )}
 
           <div className="month">
-            <Link
+          <Link
               to="/?month=1"
               className={`month-nav-link ${
                 location.search.includes("month=1") ? "active" : ""
@@ -487,6 +482,38 @@ const Header = () => {
               }`}
             >
               2월
+            </Link>
+            <Link
+              to="/?month=4"
+              className={`month-nav-link ${
+                location.search.includes("month=4") ? "active" : ""
+              }`}
+            >
+              4월
+            </Link>
+            <Link
+              to="/?month=5"
+              className={`month-nav-link ${
+                location.search.includes("month=5") ? "active" : ""
+              }`}
+            >
+              5월
+            </Link>
+            <Link
+              to="/?month=7"
+              className={`month-nav-link ${
+                location.search.includes("month=7") ? "active" : ""
+              }`}
+            >
+              7월
+            </Link>
+            <Link
+              to="/?month=8"
+              className={`month-nav-link ${
+                location.search.includes("month=8") ? "active" : ""
+              }`}
+            >
+              8월
             </Link>
           </div>
         </>
