@@ -13,9 +13,7 @@ const Home = () => {
 
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
-  const selectedMonth = searchParams.get("month")
-    ? parseInt(searchParams.get("month"))
-    : 2;
+  const selectedMonth = parseInt(searchParams.get("month"))
 
   const getScheduleList = async () => {
     try {
