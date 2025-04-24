@@ -8,6 +8,8 @@ import axios from "axios";
 import Cookies from "js-cookie";
 import { getToken, deleteToken } from "firebase/messaging";
 import { messaging } from "../FcmSetting.js";
+import { MdOutlineNotificationsNone } from "react-icons/md";
+import { MdOutlineNotificationsOff } from "react-icons/md";
 import "../FcmSetting.js";
 
 const Header = () => {
@@ -25,11 +27,11 @@ const Header = () => {
   const location = useLocation();
 
   // 경기 일정 리스트
-  const [scheduleList, setScheduleList] = useState([]); 
+  const [scheduleList, setScheduleList] = useState([]);
   // 고유한 팀 리스트
-  const [teamList, setTeamList] = useState([]); 
+  const [teamList, setTeamList] = useState([]);
   // 사용자가 선택한 선호하는 팀 리스트
-  const [selectedTeams, setSelectedTeams] = useState([]); 
+  const [selectedTeams, setSelectedTeams] = useState([]);
 
   // 팀 선택 드랍다운 관련
   const dropdownRef = useRef(null);
@@ -42,8 +44,6 @@ const Header = () => {
   const [notificationPermission, setNotificationPermission] = useState(null);
   // 사용자의 알림 허용 여부
   const [isNotification, setIsNotification] = useState(false);
-
-  console.log("로그인 상태 : " + isLogin);
 
   const onGoogleLogin = async () => {
     try {
@@ -98,7 +98,7 @@ const Header = () => {
   // 팀 이름 목록
   const getUniqueTeamList = () => {
     const teamArray = [];
-  
+
     // 매핑 테이블 정의
     const teamNameMap = {
       DK: "Dplus KIA",
@@ -107,19 +107,18 @@ const Header = () => {
       DNF: "DN 프릭스",
       BFX: "BNK 피어엑스",
       KT: "kt 롤스터",
-      OK저축은행: "OK저축은행 브리온"
+      OK저축은행: "OK저축은행 브리온",
     };
-  
+
     scheduleList.forEach((schedule) => {
       const originalName = schedule.teamName;
       const displayName = teamNameMap[originalName] || originalName;
-  
+
       teamArray.push({ name: displayName, img: schedule.img });
     });
-  
+
     setTeamList(teamArray);
   };
-  
 
   // 선호하는 팀 선택
   const handleClickButton = async (selectedTeams) => {
@@ -232,8 +231,6 @@ const Header = () => {
         email: email,
       });
 
-      console.log(userInfo.email);
-
       if (response.status == 200) {
         console.log("FCM 토큰 서버 전송 완료");
       } else {
@@ -269,9 +266,12 @@ const Header = () => {
     }
   };
 
-  
   const UserNotification = async () => {
-    const check = window.confirm("알림 설정을 변경하시겠습니까 ?");
+    const check = window.confirm(
+      isNotification
+        ? "알림 설정을 해제하시겠습니까?"
+        : "알림 설정을 허용하시겠습니까?"
+    );
 
     if (check) {
       const newNotificationState = !isNotification;
@@ -425,11 +425,24 @@ const Header = () => {
               <button className="team_button" onClick={togglePreferedGames}>
                 {isShowingPrefered ? "전체 경기" : "선호하는 팀 경기"}
               </button>
-
+              {(MdOutlineNotificationsNone, MdOutlineNotificationsOff)}{" "}
               <button className="notification_btn" onClick={UserNotification}>
-                {!isNotification ? "알림" : "알림 해제"}
+                {!isNotification ? (
+                  <>
+                    <MdOutlineNotificationsNone
+                      style={{ marginRight: "6px", fontSize: "18px" }}
+                    />
+                    알림 허용
+                  </>
+                ) : (
+                  <>
+                    <MdOutlineNotificationsOff
+                      style={{ marginRight: "6px", fontSize: "18px" }}
+                    />
+                    알림 해제
+                  </>
+                )}
               </button>
-
               <div className="team-selector" ref={dropdownRef}>
                 <div className="team-dropdown-box" onClick={toggleDropdown}>
                   <p className="selector-text">선호하는 팀 선택</p>
@@ -467,7 +480,7 @@ const Header = () => {
           )}
 
           <div className="month">
-          <Link
+            <Link
               to="/?month=1"
               className={`month-nav-link ${
                 location.search.includes("month=1") ? "active" : ""
